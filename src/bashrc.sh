@@ -4,7 +4,7 @@ then
     export PYTHONPATH=$PERSONCOMPO_PYTHON_PATH:$PYTHONPATH
 fi
 
-function personcompo-train-agent-dominoes
+function personcompo-train-agent-dominoes()
 {
-
+    echo 'WIP'
 }
