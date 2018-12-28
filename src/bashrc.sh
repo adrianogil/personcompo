@@ -8,3 +8,8 @@ function personcompo-train-agent-dominoes()
 {
     echo 'WIP'
 }
+
+function personcompo-run-dominoes-simulation()
+{
+    python2 -m personcompo.dominoes.dominoesgame
+}
