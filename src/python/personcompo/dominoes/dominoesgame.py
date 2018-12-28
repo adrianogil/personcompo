@@ -25,12 +25,16 @@ class DominoesGame:
 
         self.pass_on_streak = 0
 
+        self.points = [0, 0]
+
     def init_game(self):
         self.is_game_ended = False
 
         self.generate_tiles()
         self.shuffle_tiles()
         self.define_initial_player()
+
+        self.points = [0, 0]
 
     def generate_tiles(self):
         for i in range(self.min_tile_number, self.max_tile_number + 1):
@@ -65,6 +69,7 @@ class DominoesGame:
         tiled_played = self.tiles[tile]
 
         if corner == -1 and len(self.corners) == 0 and tiled_played[0] == tiled_played[1]:
+            # Initial tile
             self.corners = [tiled_played[0] for i in range(0, 4)]
         else:
             self.corners[corner] = tiled_played[(orientation + 1) % 2]
@@ -114,7 +119,11 @@ class DominoesGame:
 
     def player_passed(self, player_number):
         self.pass_on_streak += 1
-        pass
+
+    def verify_points(self):
+        total_points = sum(self.corners)
+        if total_points % 5 == 0:
+            self.points[self.current_player % 2] += total_points
 
     def eval_action(self, action):
         if self.is_passed(action):
@@ -124,6 +133,7 @@ class DominoesGame:
                            action['tile'],
                            action['corner'],
                            action['orientation'])
+            self.verify_points()
         self.play_count += 1
         self.current_player = (self.current_player + 1) % 4
 
