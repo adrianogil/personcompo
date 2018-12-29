@@ -23,9 +23,11 @@ class DominoesGame:
 
         self.is_game_ended = False
 
-        self.pass_on_streak = 0
+        self.passes_in_a_row = 0
+        self.last_passes_in_a_row = 0
 
         self.points = [0, 0]
+        self.winner = -1
 
     def init_game(self):
         self.is_game_ended = False
@@ -74,7 +76,7 @@ class DominoesGame:
         else:
             self.corners[corner] = tiled_played[(orientation + 1) % 2]
 
-        self.pass_on_streak = 0
+        self.passes_in_a_row = 0
 
     def get_current_actions(self):
         current_player_tiles = [i for i in range(0, 28)
@@ -118,16 +120,23 @@ class DominoesGame:
         return action["action"] == "pass"
 
     def player_passed(self, player_number):
-        self.pass_on_streak += 1
+        self.passes_in_a_row += 1
 
-    def verify_points(self):
-        total_points = sum(self.corners)
-        if total_points % 5 == 0:
-            self.points[self.current_player % 2] += total_points
+    def verify_points(self, passed=False):
+        if passed:
+            if self.passes_in_a_row == 1:  # Last player make current player to pass
+                self.points[(4 + self.current_player - 1) % 2] += 20
+        else:
+            if self.last_passes_in_a_row == 3:  # Galo
+                self.points[self.current_player % 2] += 30
+            total_points = sum(self.corners)
+            if total_points % 5 == 0:
+                self.points[self.current_player % 2] += total_points
 
     def eval_action(self, action):
         if self.is_passed(action):
             self.player_passed(self.current_player)
+            self.verify_points(passed=True)
         else:
             self.play_tile(self.current_player,
                            action['tile'],
@@ -138,7 +147,7 @@ class DominoesGame:
         self.current_player = (self.current_player + 1) % 4
 
     def verify_end_conditions(self):
-        if self.pass_on_streak >= 4:
+        if self.passes_in_a_row >= 4:
             return True
 
         for player in range(0, 4):
@@ -158,11 +167,27 @@ class DominoesGame:
         if self.verify_end_conditions():
             self.is_game_ended = True
 
+    def verify_winner(self):
+
+        if self.points[0] == self.points[1]:
+            self.winner = -1
+        elif self.points[0] > self.points[1]:
+            self.winner = 0
+        else:
+            self.winner = 1
+
+        if self.winner == -1:
+            print("Result: Draw")
+        else:
+            print("Team %s wins!" % ("A" if self.winner == 1 else "B"))
+
     def play(self):
         self.init_game()
 
         while not self.is_game_ended:
             self.game_update()
+
+        self.verify_winner()
 
 
 game = DominoesGame()
