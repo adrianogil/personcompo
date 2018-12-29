@@ -1,13 +1,18 @@
 import random
+import sys
 
 from personcompo.framework.gameagent import GameAgent
 from personcompo.framework.randombehavior import RandomBehavior
 from personcompo.dominoes.dominoesagent import GreedyDominoesBehavior
 
-
 class tiles:
     TABLE = 4
 
+# Debug print
+debug_mode = False
+def dprint(msg):
+    if debug_mode:
+        print("Debug: " + msg)
 
 class DominoesGame:
     def __init__(self):
@@ -69,8 +74,8 @@ class DominoesGame:
         '''
         self.player_tiles[tile] = tiles.TABLE
 
-        # print("DEBUG - play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
-        #     (player, self.tiles[tile], corner, orientation))
+        dprint("DEBUG - play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
+            (player, self.tiles[tile], corner, orientation))
 
         tiled_played = self.tiles[tile]
 
@@ -121,7 +126,7 @@ class DominoesGame:
 
         player_hand = [self.tiles[i] for i in current_player_tiles]
 
-        # print("DEBUG - current_actions - player %s - hand %s\n\t%s" % (self.current_player, player_hand, debug_tiles))
+        dprint("DEBUG - current_actions - player %s - hand %s\n\t%s" % (self.current_player, player_hand, debug_tiles))
 
         return available_actions
 
@@ -219,12 +224,26 @@ class DominoesGame:
 
         self.verify_winner()
 
+number_of_games = 1
 
-game = DominoesGame()
-game.players = [
-    GameAgent().add_behavior("random", 1.0, GreedyDominoesBehavior()),
-    GameAgent().add_behavior("random", 1.0, GreedyDominoesBehavior()),
-    GameAgent().add_behavior("random", 1.0, RandomBehavior()),
-    GameAgent().add_behavior("random", 1.0, RandomBehavior()),
-]
-game.play()
+
+if len(sys.argv) == 2:
+    if sys.argv[1] == '-d' or sys.argv[1] == '--details':
+        debug_mode = True
+    else:
+        number_of_games = int(sys.argv[1])
+
+winner_stats = [0, 0, 0]
+
+for i in range(0, number_of_games):
+    game = DominoesGame()
+    game.players = [
+        GameAgent().add_behavior("greedy", 0.9, GreedyDominoesBehavior()).add_behavior("random", 0.1, RandomBehavior()),
+        GameAgent().add_behavior("greedy", 0.9, GreedyDominoesBehavior()).add_behavior("random", 0.1, RandomBehavior()),
+        GameAgent().add_behavior("random", 1.0, RandomBehavior()),
+        GameAgent().add_behavior("random", 1.0, RandomBehavior()),
+    ]
+    game.play()
+    winner_stats[game.winner+1] += 1
+
+print("Game stats: %s" % (winner_stats))

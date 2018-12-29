@@ -11,5 +11,5 @@ function personcompo-train-agent-dominoes()
 
 function personcompo-run-dominoes-simulation()
 {
-    python2 -m personcompo.dominoes.dominoesgame
+    python2 -m personcompo.dominoes.dominoesgame $1
 }
