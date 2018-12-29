@@ -2,6 +2,14 @@
 class GameAgent:
     def __init__(self):
         self.behaviors = {}
+        self.world_state = {}
+
+    def update_world_state(self, event, value):
+        self.world_state[event] = value
+
+        for behavior in self.behaviors:
+            self.world_state = \
+                self.behaviors[behavior]["object"].update_world_state(self.world_state)
 
     def add_behavior(self, name, weight, behavior):
         self.behaviors[name] = {
@@ -15,7 +23,8 @@ class GameAgent:
         utility_value = 0
 
         for behavior in self.behaviors:
-            utility_value += self.behaviors[behavior]["weight"] * self.behaviors[behavior]["object"].eval(action)
+            utility_value += self.behaviors[behavior]["weight"] * \
+                self.behaviors[behavior]["object"].eval(action, self.world_state)
 
         return utility_value
 

@@ -2,6 +2,8 @@ import random
 
 from personcompo.framework.gameagent import GameAgent
 from personcompo.framework.randombehavior import RandomBehavior
+from personcompo.dominoes.dominoesagent import GreedyDominoesBehavior
+
 
 class tiles:
     TABLE = 4
@@ -12,6 +14,7 @@ class DominoesGame:
         self.tiles = []
         self.player_tiles = []
         self.corners = []  # 0 - Up, 1 - Right, 2 - Down, 3 - Left
+        self.corners_count = []
         self.min_tile_number = 0
         self.max_tile_number = 6
         self.number_players = 4
@@ -37,6 +40,7 @@ class DominoesGame:
         self.define_initial_player()
 
         self.points = [0, 0]
+        self.corners_count = [0] * 4
 
     def generate_tiles(self):
         for i in range(self.min_tile_number, self.max_tile_number + 1):
@@ -75,8 +79,12 @@ class DominoesGame:
             self.corners = [tiled_played[0] for i in range(0, 4)]
         else:
             self.corners[corner] = tiled_played[(orientation + 1) % 2]
+            self.corners_count[corner] += 1
 
         self.passes_in_a_row = 0
+
+        self.update_agents('corners', self.corners)
+        self.update_agents('corners_count', self.corners_count)
 
     def get_current_actions(self):
         current_player_tiles = [i for i in range(0, 28)
@@ -89,7 +97,8 @@ class DominoesGame:
         for tile in current_player_tiles:
             for corner in range(0, 4):
                 for orientation in range(0, 2):
-                    if self.corners[corner] == self.tiles[tile][orientation]:
+                    if self.corners[corner] == self.tiles[tile][orientation] and \
+                            (corner % 2 != 0 or self.corners_count[corner] != 0):
                         debug_key = str(self.tiles[tile])
                         if debug_key in debug_tiles:
                             debug_tiles[debug_key].append(corner)
@@ -122,6 +131,10 @@ class DominoesGame:
     def player_passed(self, player_number):
         self.passes_in_a_row += 1
 
+    def update_agents(self, world_event, world_data):
+        for p in self.players:
+            p.update_world_state(world_event, world_data)
+
     def verify_points(self, passed=False):
         if passed:
             if self.passes_in_a_row == 1:  # Last player make current player to pass
@@ -129,7 +142,23 @@ class DominoesGame:
         else:
             if self.last_passes_in_a_row == 3:  # Galo
                 self.points[self.current_player % 2] += 30
-            total_points = sum(self.corners)
+
+            total_points = 0
+
+            if self.corners_count[1] >= 1 and sum([self.corners_count[0]] + self.corners_count[2:4]) == 0:
+                total_points = self.corners[1] + 2 * self.corners[0]
+            elif self.corners_count[0] >= 1 and sum(self.corners_count[1:4]) == 0:
+                total_points = self.corners[0] + 2 * self.corners[1]
+            elif self.corners_count[0] >= 1 and self.corners_count[1] >= 1 and self.corners_count[2] >= 1:
+                total_points = self.corners[0] + self.corners[1] + self.corners[2]
+            elif self.corners_count[0] >= 1 and self.corners_count[1] >= 1 and self.corners_count[3] >= 1:
+                total_points = self.corners[0] + self.corners[1] + self.corners[3]
+            elif self.corners_count[2] >= 1 and self.corners_count[1] >= 1 and self.corners_count[3] >= 1:
+                total_points = self.corners[2] + self.corners[1] + self.corners[2]
+            elif self.corners_count[0] >= 1 and self.corners_count[1] >= 1 and \
+                    self.corners_count[2] >= 1 and self.corners_count[3] >= 1:
+                total_points = sum(self.corners)
+
             if total_points % 5 == 0:
                 self.points[self.current_player % 2] += total_points
 
@@ -179,7 +208,7 @@ class DominoesGame:
         if self.winner == -1:
             print("Result: Draw")
         else:
-            print("Team %s wins!" % ("A" if self.winner == 1 else "B"))
+            print("Team %s wins! %s" % ("A" if self.winner == 1 else "B", self.points))
 
     def play(self):
         self.init_game()
@@ -192,8 +221,8 @@ class DominoesGame:
 
 game = DominoesGame()
 game.players = [
-    GameAgent().add_behavior("random", 1.0, RandomBehavior()),
-    GameAgent().add_behavior("random", 1.0, RandomBehavior()),
+    GameAgent().add_behavior("random", 1.0, GreedyDominoesBehavior()),
+    GameAgent().add_behavior("random", 1.0, GreedyDominoesBehavior()),
     GameAgent().add_behavior("random", 1.0, RandomBehavior()),
     GameAgent().add_behavior("random", 1.0, RandomBehavior()),
 ]
