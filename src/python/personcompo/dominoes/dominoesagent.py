@@ -24,7 +24,10 @@ class GreedyDominoesBehavior:
 
         corners[target_corner] = tile[(target_orientation + 1) % 2]
 
-        if corners_count[1] >= 1 and sum([corners_count[0]] + corners_count[2:4]) == 0:
+        # print(str(corners_count))
+
+        if corners_count[1] >= 1 and (corners_count[0] + corners_count[2] + \
+                corners_count[3]) == 0:
             next_points = corners[1] + 2 * corners[0]
         elif corners_count[0] >= 1 and sum(corners_count[1:4]) == 0:
             next_points = corners[0] + 2 * corners[1]

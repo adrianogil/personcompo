@@ -14,7 +14,7 @@ class DominoesGame:
         self.tiles = []
         self.player_tiles = []
         self.corners = []  # 0 - Up, 1 - Right, 2 - Down, 3 - Left
-        self.corners_count = []
+        self.corners_count = [0] * 4
         self.min_tile_number = 0
         self.max_tile_number = 6
         self.number_players = 4
@@ -69,8 +69,8 @@ class DominoesGame:
         '''
         self.player_tiles[tile] = tiles.TABLE
 
-        print("DEBUG - play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
-            (player, self.tiles[tile], corner, orientation))
+        # print("DEBUG - play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
+        #     (player, self.tiles[tile], corner, orientation))
 
         tiled_played = self.tiles[tile]
 
@@ -121,7 +121,7 @@ class DominoesGame:
 
         player_hand = [self.tiles[i] for i in current_player_tiles]
 
-        print("DEBUG - current_actions - player %s - hand %s\n\t%s" % (self.current_player, player_hand, debug_tiles))
+        # print("DEBUG - current_actions - player %s - hand %s\n\t%s" % (self.current_player, player_hand, debug_tiles))
 
         return available_actions
 
@@ -145,7 +145,8 @@ class DominoesGame:
 
             total_points = 0
 
-            if self.corners_count[1] >= 1 and sum([self.corners_count[0]] + self.corners_count[2:4]) == 0:
+            if self.corners_count[1] >= 1 and (self.corners_count[0] + self.corners_count[2] + \
+                     self.corners_count[2]) == 0:
                 total_points = self.corners[1] + 2 * self.corners[0]
             elif self.corners_count[0] >= 1 and sum(self.corners_count[1:4]) == 0:
                 total_points = self.corners[0] + 2 * self.corners[1]
