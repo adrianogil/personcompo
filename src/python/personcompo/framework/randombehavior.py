@@ -5,7 +5,7 @@ class RandomBehavior:
     def __init__(self):
         pass
 
-    def update_world_state(self, world_state):
+    def update_world_state(self, world_state, event, value):
         return world_state
 
     def eval(self, action, world_state):

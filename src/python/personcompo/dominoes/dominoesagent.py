@@ -1,11 +1,17 @@
 from copy import deepcopy
 
 
+# class AvoidPartnerPassDominoesBehavior:
+
+# class SeekEnemyPassDominoesBehavior:
+
+
+
 class GreedyDominoesBehavior:
     def __init__(self):
         pass
 
-    def update_world_state(self, world_state):
+    def update_world_state(self, world_state, event, value):
         return world_state
 
     def eval(self, action, world_state):
@@ -23,6 +29,7 @@ class GreedyDominoesBehavior:
         target_orientation = action['orientation']
 
         corners[target_corner] = tile[(target_orientation + 1) % 2]
+        corners_count[target_corner] = corners_count[target_corner] + 1
 
         # print(str(corners_count))
 
@@ -40,6 +47,7 @@ class GreedyDominoesBehavior:
         elif corners_count[0] >= 1 and corners_count[1] >= 1 and \
                 corners_count[2] >= 1 and corners_count[3] >= 1:
             next_points = sum(corners)
+
         if next_points % 5 != 0:
             next_points = 0
 

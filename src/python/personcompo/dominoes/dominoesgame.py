@@ -151,7 +151,7 @@ class DominoesGame:
             total_points = 0
 
             if self.corners_count[1] >= 1 and (self.corners_count[0] + self.corners_count[2] + \
-                     self.corners_count[2]) == 0:
+                     self.corners_count[3]) == 0:
                 total_points = self.corners[1] + 2 * self.corners[0]
             elif self.corners_count[0] >= 1 and sum(self.corners_count[1:4]) == 0:
                 total_points = self.corners[0] + 2 * self.corners[1]
@@ -214,7 +214,7 @@ class DominoesGame:
         if self.winner == -1:
             print("Result: Draw")
         else:
-            print("Team %s wins! %s" % ("A" if self.winner == 1 else "B", self.points))
+            print("Team %s wins! %s" % ("A" if self.winner == 0 else "B", self.points))
 
     def play(self):
         self.init_game()
@@ -235,13 +235,24 @@ if len(sys.argv) == 2:
 
 winner_stats = [0, 0, 0]
 
+
+def get_teamA_agent():
+    return GameAgent()\
+        .add_behavior("greedy", 1.0, GreedyDominoesBehavior())
+
+
+def get_teamB_agent():
+    return GameAgent()\
+        .add_behavior("random", 1.0, RandomBehavior())
+
+
 for i in range(0, number_of_games):
     game = DominoesGame()
     game.players = [
-        GameAgent().add_behavior("greedy", 0.9, GreedyDominoesBehavior()).add_behavior("random", 0.1, RandomBehavior()),
-        GameAgent().add_behavior("greedy", 0.9, GreedyDominoesBehavior()).add_behavior("random", 0.1, RandomBehavior()),
-        GameAgent().add_behavior("random", 1.0, RandomBehavior()),
-        GameAgent().add_behavior("random", 1.0, RandomBehavior()),
+       get_teamA_agent(),
+       get_teamB_agent(),
+       get_teamA_agent(),
+       get_teamB_agent()
     ]
     game.play()
     winner_stats[game.winner+1] += 1

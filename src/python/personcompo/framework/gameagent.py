@@ -9,7 +9,7 @@ class GameAgent:
 
         for behavior in self.behaviors:
             self.world_state = \
-                self.behaviors[behavior]["object"].update_world_state(self.world_state)
+                self.behaviors[behavior]["object"].update_world_state(self.world_state, event, value)
 
     def add_behavior(self, name, weight, behavior):
         self.behaviors[name] = {
