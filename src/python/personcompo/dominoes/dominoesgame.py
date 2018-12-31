@@ -37,6 +37,10 @@ class DominoesGame:
         self.points = [0, 0]
         self.winner = -1
 
+        self.min_points_to_win = 200
+
+        self.games_count = 0
+
     def init_game(self):
         self.is_game_ended = False
 
@@ -44,7 +48,6 @@ class DominoesGame:
         self.shuffle_tiles()
         self.define_initial_player()
 
-        self.points = [0, 0]
         self.corners_count = [0] * 4
 
     def generate_tiles(self):
@@ -56,11 +59,12 @@ class DominoesGame:
         random.shuffle(self.tiles)
         self.player_tiles = [int(i / 7) for i in range(0, 28)]
 
-    def define_initial_player(self):
+    def define_initial_player(self, first_game=True):
         current_tile = -1
 
         for i in range(0, 28):
-            if self.tiles[i] == (6, 6):
+            if (first_game and self.tiles[i] == (6, 6)) or \
+                    (not first_game and self.tiles[i][0] == self.tiles[i][1]):
                 current_tile = i
                 self.current_player = self.player_tiles[i]
                 break
@@ -217,12 +221,17 @@ class DominoesGame:
             print("Team %s wins! %s" % ("A" if self.winner == 0 else "B", self.points))
 
     def play(self):
-        self.init_game()
+        self.games_count = 0
+        self.points = [0, 0]
 
-        while not self.is_game_ended:
-            self.game_update()
+        while max(self.points) < self.min_points_to_win:
+            self.init_game()
+
+            while not self.is_game_ended:
+                self.game_update()
 
         self.verify_winner()
+
 
 number_of_games = 1
 
