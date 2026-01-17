@@ -20,6 +20,9 @@ class GameAgent:
         return self
 
     def assess_action(self, action):
+        '''
+            Get the utility value of an action
+        '''
         utility_value = 0
 
         for behavior in self.behaviors:
@@ -29,6 +32,9 @@ class GameAgent:
         return utility_value
 
     def get_action(self, actions):
+        '''
+            Find the action with best utility value
+        '''
         best_action = None
         best_utility_value = 1000000
 

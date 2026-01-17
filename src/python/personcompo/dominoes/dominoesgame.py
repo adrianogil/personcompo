@@ -78,7 +78,7 @@ class DominoesGame:
         '''
         self.player_tiles[tile] = tiles.TABLE
 
-        dprint("DEBUG - play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
+        dprint("play_tile - player - %s - tile - %s - corner - %s - orientation - %s" % \
             (player, self.tiles[tile], corner, orientation))
 
         tiled_played = self.tiles[tile]
@@ -232,38 +232,40 @@ class DominoesGame:
 
         self.verify_winner()
 
+if __name__ == '__main__':
+    # CLI to simulate dominoes games
+    # Usage:
+    #   python3 -m personcompo.dominoes.dominoesgame <number_of_simulated_games>
+    #       number_of_simulated_games is by default 1
+    number_of_games = 1
 
-number_of_games = 1
+    if len(sys.argv) == 2:
+        if sys.argv[1] == '-d' or sys.argv[1] == '--details':
+            debug_mode = True
+        else:
+            number_of_games = int(sys.argv[1])
 
+    winner_stats = [0, 0, 0]
 
-if len(sys.argv) == 2:
-    if sys.argv[1] == '-d' or sys.argv[1] == '--details':
-        debug_mode = True
-    else:
-        number_of_games = int(sys.argv[1])
-
-winner_stats = [0, 0, 0]
-
-
-def get_teamA_agent():
-    return GameAgent()\
-        .add_behavior("greedy", 1.0, GreedyDominoesBehavior())
-
-
-def get_teamB_agent():
-    return GameAgent()\
-        .add_behavior("random", 1.0, RandomBehavior())
+    def get_teamA_agent():
+        return GameAgent()\
+            .add_behavior("greedy", 1.0, GreedyDominoesBehavior())
 
 
-for i in range(0, number_of_games):
-    game = DominoesGame()
-    game.players = [
-       get_teamA_agent(),
-       get_teamB_agent(),
-       get_teamA_agent(),
-       get_teamB_agent()
-    ]
-    game.play()
-    winner_stats[game.winner+1] += 1
+    def get_teamB_agent():
+        return GameAgent()\
+            .add_behavior("random", 1.0, RandomBehavior())
 
-print("Game stats: %s" % (winner_stats))
+
+    for i in range(0, number_of_games):
+        game = DominoesGame()
+        game.players = [
+           get_teamA_agent(),
+           get_teamB_agent(),
+           get_teamA_agent(),
+           get_teamB_agent()
+        ]
+        game.play()
+        winner_stats[game.winner+1] += 1
+
+    print("Game stats: %s" % (winner_stats))
