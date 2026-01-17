@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "personcompo"
+version = "0.1.0"
+description = "Modeling personality as a composition of behaviors for game AI agents."
+readme = "README.md"
+packages = [{ include = "personcompo", from = "src/python" }]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+
+[build-system]
+requires = ["poetry-core>=1.6.0"]
+build-backend = "poetry.core.masonry.api"
