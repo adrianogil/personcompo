@@ -6,7 +6,7 @@ ENV POETRY_VERSION=1.7.1
 
 RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}"
 
-COPY pyproject.toml poetry.lock README.md /app/
+COPY pyproject.toml README.md /app/
 COPY src /app/src
 
 RUN poetry config virtualenvs.create false \
