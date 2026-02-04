@@ -6,7 +6,7 @@ readme = "README.md"
 packages = [{ include = "personcompo", from = "src/python" }]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.11,<4.0"
 
 [build-system]
 requires = ["poetry-core>=1.6.0"]
