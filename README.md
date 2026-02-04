@@ -17,7 +17,7 @@ at each decision point.
 
 ## Requirements
 
-- Python 3.8+ (managed via Poetry)
+- Python 3.11+ (managed via Poetry)
 - No third-party runtime dependencies (stdlib only)
 
 ## Setup with Poetry
